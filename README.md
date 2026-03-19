@@ -21,7 +21,7 @@ Open your terminal and run:
 
 ### 3. Build the Image
 This command creates the isolated Linux environment.
-`docker build -t sales-analytics .`
+`docker build -t delacruz-sales-analytics .`
 
 ---
 
@@ -30,7 +30,13 @@ This command creates the isolated Linux environment.
 To run the analysis and see the generated graphs on your Windows machine, use the following command (optimized for Git Bash):
 
 **Command:**
-`MSYS_NO_PATHCONV=1 docker run --rm -v "/$(pwd)/output:/app/output" sales-analytics`
+`MSYS_NO_PATHCONV=1 docker run --rm -v "/$(pwd)/output:/app/output" delacruz-sales-analytics`
+
+`MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "/$(pwd)/output:/app/output" \
+  -v "/$(pwd)/logs:/app/logs" \
+  --name delacruz-run \
+  delacruz-sales-analytics`
 
 ### 📂 Output Location
 After the container finishes, check the following folder on your computer:
