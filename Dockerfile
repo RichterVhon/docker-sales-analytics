@@ -1,5 +1,3 @@
-# CREATE PRO Dockerfile
-@"
 # ========================================
 # 🚀 DELACRUZ SALES ANALYTICS - PRODUCTION
 # Python 3.11 + Data Science + Logging
@@ -12,52 +10,49 @@ FROM python:3.11-slim
 LABEL maintainer="delacruz@example.com"
 LABEL version="1.0"
 LABEL description="Sales Analytics Dashboard"
-LABEL org.opencontainers.image.source="https://github.com/yourname/sales-analytics"
 
 # 📦 System dependencies (matplotlib + fonts)
-RUN apt-get update && apt-get install -y \\
-    gcc \\
-    g++ \\
-    libfreetype6-dev \\
-    libpng-dev \\
-    libjpeg-dev \\
-    fonts-dejavu-core \\
-    curl \\
-    && apt-get clean \\
+# We use \ at the end of lines to split one command into many for readability.
+# IMPORTANT: Ensure there are NO spaces after the backslashes.
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libfreetype6-dev \
+    libpng-dev \
+    libjpeg-dev \
+    fonts-dejavu-core \
+    curl \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 📁 Working directory
+# 📁 Working directory inside the container
 WORKDIR /app
 
-# 🔄 Copy requirements first (Docker layer caching!)
+# 🔄 Copy requirements first (to leverage Docker layer caching)
 COPY requirements.txt .
 
 # 🚀 Install Python packages + upgrade pip
-RUN pip install --upgrade pip && \\
+RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 📂 Copy source code
+# 📂 Copy all source code from your current folder to /app
 COPY . .
 
-# 🛠️ Setup permissions & folders
-RUN mkdir -p /app/graphs /app/logs && \\
-    chmod +x main.py && \\
-    echo \"$(date): App ready\" > /app/logs/docker.log
+# 🛠️ Setup permissions & folders for output (Updated to 'output')
+RUN mkdir -p /app/output /app/logs && \
+    chmod -R 777 /app/output /app/logs && \
+    chmod +x main.py
 
-# 🌡️ Expose port (if you add web UI later)
+# 🌡️ Expose port (useful if you add a Flask/FastAPI UI later)
 EXPOSE 8080
 
-# 📊 Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
-    CMD python -c \"import pandas, seaborn; print('Healthy')\" || exit 1
+# 📊 Healthcheck: Verifies if the core libraries are functional
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import pandas; print('Healthy')" || exit 1
 
-# 📜 Logging config
+# 📜 Logging and Python Environment config
 ENV PYTHONUNBUFFERED=1
 ENV LOG_DIR=/app/logs
 
-# 🚀 Entry point with logging
-CMD echo \"🚀 Starting Sales Analytics...\" && \\
-    echo \"$(date): Container started\" >> /app/logs/docker.log && \\
-    python main.py 2>&1 | tee -a /app/logs/app.log && \\
-    echo \"$(date): Analysis complete\" >> /app/logs/docker.log
-"@ | Out-File -FilePath "Dockerfile" -Encoding UTF8
+# 🚀 Entry point: Logs the start time and runs the script
+CMD ["sh", "-c", "echo '🚀 Starting Sales Analytics...' && python main.py 2>&1 | tee -a /app/logs/app.log"]
