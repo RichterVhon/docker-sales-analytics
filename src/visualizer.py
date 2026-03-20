@@ -3,7 +3,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import time
 from datetime import datetime
+
 
 def create_visualizations(df, analysis, output_dir='output'):
     """🚀 8-GRAPH BUSINESS INTELLIGENCE SUITE"""
@@ -123,4 +125,8 @@ def create_visualizations(df, analysis, output_dir='output'):
     
     print(f"✅ 8. Transaction & Return Summary generated.")
     print(f"\n🎉 ANALYSIS COMPLETE! Folder: '{new_output_dir}'")
+    print("⏲️ Container will stay active for 30 minutes for file inspection...")
+
+    # Keep the container alive for 1800 seconds (30 mins)
+    time.sleep(1800) 
     return new_output_dir
