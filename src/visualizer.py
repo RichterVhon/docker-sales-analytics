@@ -98,6 +98,15 @@ def create_visualizations(df, analysis, output_dir='output'):
     plt.title('🏆 PRODUCT PARETO ANALYSIS (80/20 Rule)', fontweight='bold')
     plt.savefig(f'{new_output_dir}/6_pareto_analysis.png', dpi=300); plt.close()
 
+# 🔥 7. TIME-SERIES REVENUE TREND (The missing one!)
+    plt.figure(figsize=(14, 7))
+    time_df = df.groupby('Date')['Sales'].sum().reset_index().sort_values('Date')
+    time_df['Rolling_Avg'] = time_df['Sales'].rolling(window=7).mean()
+    plt.plot(time_df['Date'], time_df['Sales'], alpha=0.3, label='Daily Sales', color='gray')
+    plt.plot(time_df['Date'], time_df['Rolling_Avg'], label='7-Day Trend', color='blue', linewidth=3)
+    plt.title('📈 SALES MOMENTUM & REVENUE TREND', fontweight='bold', fontsize=16)
+    plt.legend(); plt.savefig(f'{new_output_dir}/7_revenue_trend.png', dpi=300); plt.close()
+    
 # 🔥 8. TRANSACTION SIZE vs. RETURN VOLUME
     # Histogram = "What is our most common sale amount?"
     # Pie Chart = "How much of our business is actually being returned?"
